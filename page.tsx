@@ -8,10 +8,10 @@ import { machineData, rulesData } from "@/lib/dummy-data"
 
 export default function Home() {
   const [selectedSlots, setSelectedSlots] = useState<any[]>([])
+  const [bookedSlots, setBookedSlots] = useState<any[]>([])
   const [isBookingFormOpen, setIsBookingFormOpen] = useState(false)
 
   const handleSlotSelect = (slot: any) => {
-    // Check if slot is already selected
     const isSelected = selectedSlots.some((s) => s.slotDate === slot.slotDate && s.openingTime === slot.openingTime)
 
     if (isSelected) {
@@ -24,12 +24,17 @@ export default function Home() {
   }
 
   const openBookingForm = () => {
-    console.log("Opening booking form")
     setIsBookingFormOpen(true)
   }
 
   const closeBookingForm = () => {
     setIsBookingFormOpen(false)
+  }
+
+  const handleBookingConfirmed = (newBookedSlots: any[]) => {
+    setBookedSlots([...bookedSlots, ...newBookedSlots])
+    setSelectedSlots([])
+    closeBookingForm()
   }
 
   return (
@@ -93,16 +98,17 @@ export default function Home() {
         machineData={machineData}
         rulesData={rulesData}
         selectedSlots={selectedSlots}
+        bookedSlots={bookedSlots}
         onSlotSelect={handleSlotSelect}
       />
 
       <BookingForm
-        key={isBookingFormOpen ? "open" : "closed"}
         isOpen={isBookingFormOpen}
         onClose={closeBookingForm}
         selectedSlots={selectedSlots}
         machineId={machineData.machine.id}
         slotCost={rulesData.rules.machinePerSlotCost}
+        onBookingConfirmed={handleBookingConfirmed}
       />
     </main>
   )
